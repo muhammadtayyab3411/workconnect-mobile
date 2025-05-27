@@ -60,10 +60,25 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
+  full_name: string;
   role: 'client' | 'worker';
-  phone?: string;
+  phone_number?: string;
+  address?: string;
+  date_of_birth?: string;
   profile_picture?: string;
+  bio?: string;
+  skills: string[];
+  languages: string[];
+  years_of_experience?: number;
+  experience_description?: string;
+  average_rating: number;
+  total_reviews: number;
+  total_completed_jobs: number;
+  rating_display: string;
+  experience_display: string;
   is_verified: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface JobCategory {
@@ -171,6 +186,19 @@ export interface AuthResponse {
   };
 }
 
+export interface ProfileUpdateRequest {
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  address?: string;
+  date_of_birth?: string;
+  bio?: string;
+  skills?: string[];
+  languages?: string[];
+  years_of_experience?: number;
+  experience_description?: string;
+}
+
 // API Functions
 export const authAPI = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
@@ -203,6 +231,27 @@ export const authAPI = {
 
   getProfile: async (): Promise<User> => {
     const response = await api.get('/auth/profile/');
+    return response.data;
+  },
+
+  updateProfile: async (profileData: ProfileUpdateRequest): Promise<User> => {
+    const response = await api.patch('/auth/profile/', profileData);
+    return response.data.user;
+  },
+
+  uploadProfilePicture: async (imageFile: any): Promise<{ profile_picture_url: string }> => {
+    const formData = new FormData();
+    formData.append('profile_picture', {
+      uri: imageFile.uri,
+      type: imageFile.type || 'image/jpeg',
+      name: imageFile.fileName || 'profile.jpg',
+    } as any);
+
+    const response = await api.post('/auth/profile/picture/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };

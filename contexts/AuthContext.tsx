@@ -8,6 +8,7 @@ interface AuthContextType {
   login: (email: string, password: string, role: 'client' | 'worker') => Promise<void>;
   signup: (email: string, password: string, name: string, role: 'client' | 'worker') => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -112,8 +113,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = async () => {
+    try {
+      const profile = await authAPI.getProfile();
+      setUser(profile);
+      await AsyncStorage.setItem('user_data', JSON.stringify(profile));
+    } catch (error) {
+      console.error('Error updating user data:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
