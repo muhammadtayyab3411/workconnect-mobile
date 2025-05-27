@@ -1,32 +1,126 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { cn } from '../../utils/cn';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'secondary' | 'destructive' | 'outline';
-  className?: string;
+  variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning';
+  size?: 'sm' | 'md' | 'lg';
+  style?: any;
 }
 
-const badgeVariants = {
-  default: 'bg-primary text-primary-foreground',
-  secondary: 'bg-secondary text-secondary-foreground',
-  destructive: 'bg-destructive text-destructive-foreground',
-  outline: 'border border-input bg-background text-foreground',
-};
-
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
+export function Badge({ 
+  children, 
+  variant = 'default', 
+  size = 'md',
+  style 
+}: BadgeProps) {
   return (
-    <View
-      className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5',
-        badgeVariants[variant],
-        className
-      )}
-    >
-      <Text className="text-xs font-semibold">
+    <View style={[
+      styles.badge,
+      styles[variant],
+      styles[size],
+      style
+    ]}>
+      <Text style={[
+        styles.text,
+        styles[`${variant}Text`],
+        styles[`${size}Text`]
+      ]}>
         {children}
       </Text>
     </View>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  badge: {
+    borderRadius: 9999,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  // Variants
+  default: {
+    backgroundColor: '#18181b',
+    borderColor: '#18181b',
+  },
+  secondary: {
+    backgroundColor: '#f4f4f5',
+    borderColor: '#e4e4e7',
+  },
+  destructive: {
+    backgroundColor: '#ef4444',
+    borderColor: '#ef4444',
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderColor: '#e4e4e7',
+  },
+  success: {
+    backgroundColor: '#22c55e',
+    borderColor: '#22c55e',
+  },
+  warning: {
+    backgroundColor: '#f59e0b',
+    borderColor: '#f59e0b',
+  },
+  
+  // Sizes
+  sm: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  md: {
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  lg: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  
+  // Text styles
+  text: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 16,
+  },
+  
+  // Text colors
+  defaultText: {
+    color: '#ffffff',
+  },
+  secondaryText: {
+    color: '#71717a',
+  },
+  destructiveText: {
+    color: '#ffffff',
+  },
+  outlineText: {
+    color: '#18181b',
+  },
+  successText: {
+    color: '#ffffff',
+  },
+  warningText: {
+    color: '#ffffff',
+  },
+  
+  // Text sizes
+  smText: {
+    fontSize: 11,
+    lineHeight: 14,
+  },
+  mdText: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  lgText: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
+}); 

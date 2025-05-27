@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AuthScreen } from './screens/AuthScreen';
-import { DashboardScreen } from './screens/DashboardScreen';
+import { AppNavigator } from './navigation/AppNavigator';
 // import './global.css';
 
 function AppContent() {
@@ -17,14 +18,16 @@ function AppContent() {
     );
   }
 
-  return user ? <DashboardScreen /> : <AuthScreen />;
+  return user ? <AppNavigator /> : <AuthScreen />;
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <StatusBar style="auto" />
-      <AppContent />
-    </AuthProvider>
+    <NavigationContainer>
+      <AuthProvider>
+        <StatusBar style="auto" />
+        <AppContent />
+      </AuthProvider>
+    </NavigationContainer>
   );
 }
