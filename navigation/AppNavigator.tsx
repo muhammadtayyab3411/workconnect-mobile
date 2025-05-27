@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { DashboardScreen } from '../screens/DashboardScreen';
-import { JobsScreen } from '../screens/JobsScreen';
+import { JobsStackNavigator } from './JobsStackNavigator';
 import { ProfileScreen } from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -46,10 +46,10 @@ export function AppNavigator() {
       />
       <Tab.Screen 
         name="Jobs" 
-        component={JobsScreen}
+        component={JobsStackNavigator}
         options={{
           tabBarLabel: 'Jobs',
-          headerTitle: 'Jobs',
+          headerShown: false, // Hide tab header since stack has its own
         }}
       />
       <Tab.Screen 

@@ -12,7 +12,11 @@ import { Button, Card, CardHeader, CardTitle, CardContent, Input, Badge } from '
 import { useAuth } from '../contexts/AuthContext';
 import { jobsAPI, JobListItem, JobCategory } from '../services/api';
 
-export function JobsScreen() {
+interface JobsScreenProps {
+  navigation?: any;
+}
+
+export function JobsScreen({ navigation }: JobsScreenProps) {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<JobListItem[]>([]);
   const [categories, setCategories] = useState<JobCategory[]>([]);
@@ -64,6 +68,12 @@ export function JobsScreen() {
       setJobs(jobsData);
     } catch (error) {
       console.error('Error filtering jobs:', error);
+    }
+  };
+
+  const handleJobPress = (jobId: string) => {
+    if (navigation) {
+      navigation.navigate('JobDetails', { jobId });
     }
   };
 
@@ -213,54 +223,68 @@ export function JobsScreen() {
             </Card>
           ) : (
             jobs.map((job) => (
-              <Card key={job.id} style={styles.jobCard}>
-                <CardHeader>
-                  <View style={styles.jobCardHeader}>
-                    <View style={styles.jobCardTitleRow}>
-                      <CardTitle style={styles.jobCardTitle}>{job.title}</CardTitle>
-                      {job.urgent && (
-                        <Badge variant="destructive" size="sm">
-                          Urgent
+              <TouchableOpacity 
+                key={job.id} 
+                onPress={() => handleJobPress(job.id)}
+                activeOpacity={0.7}
+              >
+                <Card style={styles.jobCard}>
+                  <CardHeader>
+                    <View style={styles.jobCardHeader}>
+                      <View style={styles.jobCardTitleRow}>
+                        <CardTitle style={styles.jobCardTitle}>{job.title}</CardTitle>
+                        {job.urgent && (
+                          <Badge variant="destructive" size="sm">
+                            Urgent
+                          </Badge>
+                        )}
+                      </View>
+                      <View style={styles.jobCardMeta}>
+                        <Text style={styles.jobCardCategory}>{job.category_name}</Text>
+                        <Text style={styles.jobCardLocation}>{job.city}</Text>
+                        <Badge variant={getStatusBadgeVariant(job.status)} size="sm">
+                          {job.status}
                         </Badge>
+                      </View>
+                    </View>
+                  </CardHeader>
+                  <CardContent>
+                    <Text style={styles.jobCardDescription} numberOfLines={3}>
+                      {job.description}
+                    </Text>
+                    <View style={styles.jobCardFooter}>
+                      <View style={styles.jobCardInfo}>
+                        <Text style={styles.jobCardBudget}>{job.budget_display}</Text>
+                        <Text style={styles.jobCardTime}>{job.posted_time_ago}</Text>
+                      </View>
+                      {!isClient && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onPress={() => handleJobPress(job.id)}
+                        >
+                          View Details
+                        </Button>
+                      )}
+                      {isClient && (
+                        <View style={styles.clientJobActions}>
+                          <Text style={styles.applicationsCount}>
+                            {/* We'll need to add applications_count to the API response */}
+                            Applications: 0
+                          </Text>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onPress={() => handleJobPress(job.id)}
+                          >
+                            Manage
+                          </Button>
+                        </View>
                       )}
                     </View>
-                    <View style={styles.jobCardMeta}>
-                      <Text style={styles.jobCardCategory}>{job.category_name}</Text>
-                      <Text style={styles.jobCardLocation}>{job.city}</Text>
-                      <Badge variant={getStatusBadgeVariant(job.status)} size="sm">
-                        {job.status}
-                      </Badge>
-                    </View>
-                  </View>
-                </CardHeader>
-                <CardContent>
-                  <Text style={styles.jobCardDescription} numberOfLines={3}>
-                    {job.description}
-                  </Text>
-                  <View style={styles.jobCardFooter}>
-                    <View style={styles.jobCardInfo}>
-                      <Text style={styles.jobCardBudget}>{job.budget_display}</Text>
-                      <Text style={styles.jobCardTime}>{job.posted_time_ago}</Text>
-                    </View>
-                    {!isClient && (
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                    )}
-                    {isClient && (
-                      <View style={styles.clientJobActions}>
-                        <Text style={styles.applicationsCount}>
-                          {/* We'll need to add applications_count to the API response */}
-                          Applications: 0
-                        </Text>
-                        <Button variant="outline" size="sm">
-                          Manage
-                        </Button>
-                      </View>
-                    )}
-                  </View>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </TouchableOpacity>
             ))
           )}
         </View>
